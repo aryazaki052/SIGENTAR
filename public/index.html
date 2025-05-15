@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/DESAANTAP_1.js"></script>
+        <script src="data/DESAPANGKUNGTIBAH_2.js"></script>
+        <script src="data/Merged_3.js"></script>
+        <script src="data/DESABERABAN_4.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:23, minZoom:1
+        }).fitBounds([[-8.554954253366212,114.9586692111495],[-8.492279355153986,115.05358944913424]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSatellite_0');
+        map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
+        var layer_GoogleSatellite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 23,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleSatellite_0;
+        map.addLayer(layer_GoogleSatellite_0);
+        function pop_DESAANTAP_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">KECAMATAN</th>\
+                        <td class="visible-with-data" id="KECAMATAN">' + (feature.properties['KECAMATAN'] !== null ? autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KELURAHAN</th>\
+                        <td class="visible-with-data" id="KELURAHAN">' + (feature.properties['KELURAHAN'] !== null ? autolinker.link(String(feature.properties['KELURAHAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEHAK</th>\
+                        <td class="visible-with-data" id="TIPEHAK">' + (feature.properties['TIPEHAK'] !== null ? autolinker.link(String(feature.properties['TIPEHAK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPRODUK</th>\
+                        <td class="visible-with-data" id="TIPEPRODUK">' + (feature.properties['TIPEPRODUK'] !== null ? autolinker.link(String(feature.properties['TIPEPRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIB</th>\
+                        <td class="visible-with-data" id="NIB">' + (feature.properties['NIB'] !== null ? autolinker.link(String(feature.properties['NIB']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LUASPETA</th>\
+                        <td class="visible-with-data" id="LUASPETA">' + (feature.properties['LUASPETA'] !== null ? autolinker.link(String(feature.properties['LUASPETA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIBEL</th>\
+                        <td class="visible-with-data" id="NIBEL">' + (feature.properties['NIBEL'] !== null ? autolinker.link(String(feature.properties['NIBEL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SU</th>\
+                        <td class="visible-with-data" id="SU">' + (feature.properties['SU'] !== null ? autolinker.link(String(feature.properties['SU']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PBT</th>\
+                        <td class="visible-with-data" id="PBT">' + (feature.properties['PBT'] !== null ? autolinker.link(String(feature.properties['PBT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PRODUK</th>\
+                        <td class="visible-with-data" id="PRODUK">' + (feature.properties['PRODUK'] !== null ? autolinker.link(String(feature.properties['PRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TAHUNTERBI</th>\
+                        <td class="visible-with-data" id="TAHUNTERBI">' + (feature.properties['TAHUNTERBI'] !== null ? autolinker.link(String(feature.properties['TAHUNTERBI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PEMILIK</th>\
+                        <td class="visible-with-data" id="PEMILIK">' + (feature.properties['PEMILIK'] !== null ? autolinker.link(String(feature.properties['PEMILIK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPEMILI</th>\
+                        <td class="visible-with-data" id="TIPEPEMILI">' + (feature.properties['TIPEPEMILI'] !== null ? autolinker.link(String(feature.properties['TIPEPEMILI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NOHAK_FULL</th>\
+                        <td class="visible-with-data" id="NOHAK_FULL">' + (feature.properties['NOHAK_FULL'] !== null ? autolinker.link(String(feature.properties['NOHAK_FULL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KETERANGAN</th>\
+                        <td class="visible-with-data" id="KETERANGAN">' + (feature.properties['KETERANGAN'] !== null ? autolinker.link(String(feature.properties['KETERANGAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['search'] !== null ? autolinker.link(String(feature.properties['search']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_DESAANTAP_1_0(feature) {
+            switch(String(feature.properties['KETERANGAN'])) {
+                case 'TANAH TERINDIKASI TERLANTAR':
+                    return {
+                pane: 'pane_DESAANTAP_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(55,221,44,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_DESAANTAP_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,112,166,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DESAANTAP_1');
+        map.getPane('pane_DESAANTAP_1').style.zIndex = 401;
+        map.getPane('pane_DESAANTAP_1').style['mix-blend-mode'] = 'normal';
+        var layer_DESAANTAP_1 = new L.geoJson(json_DESAANTAP_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DESAANTAP_1',
+            layerName: 'layer_DESAANTAP_1',
+            pane: 'pane_DESAANTAP_1',
+            onEachFeature: pop_DESAANTAP_1,
+            style: style_DESAANTAP_1_0,
+        });
+        bounds_group.addLayer(layer_DESAANTAP_1);
+        map.addLayer(layer_DESAANTAP_1);
+        function pop_DESAPANGKUNGTIBAH_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">KECAMATAN</th>\
+                        <td class="visible-with-data" id="KECAMATAN">' + (feature.properties['KECAMATAN'] !== null ? autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KELURAHAN</th>\
+                        <td class="visible-with-data" id="KELURAHAN">' + (feature.properties['KELURAHAN'] !== null ? autolinker.link(String(feature.properties['KELURAHAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEHAK</th>\
+                        <td class="visible-with-data" id="TIPEHAK">' + (feature.properties['TIPEHAK'] !== null ? autolinker.link(String(feature.properties['TIPEHAK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPRODUK</th>\
+                        <td class="visible-with-data" id="TIPEPRODUK">' + (feature.properties['TIPEPRODUK'] !== null ? autolinker.link(String(feature.properties['TIPEPRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIB</th>\
+                        <td class="visible-with-data" id="NIB">' + (feature.properties['NIB'] !== null ? autolinker.link(String(feature.properties['NIB']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LUASPETA</th>\
+                        <td class="visible-with-data" id="LUASPETA">' + (feature.properties['LUASPETA'] !== null ? autolinker.link(String(feature.properties['LUASPETA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIBEL</th>\
+                        <td class="visible-with-data" id="NIBEL">' + (feature.properties['NIBEL'] !== null ? autolinker.link(String(feature.properties['NIBEL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SU</th>\
+                        <td class="visible-with-data" id="SU">' + (feature.properties['SU'] !== null ? autolinker.link(String(feature.properties['SU']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PBT</th>\
+                        <td class="visible-with-data" id="PBT">' + (feature.properties['PBT'] !== null ? autolinker.link(String(feature.properties['PBT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PRODUK</th>\
+                        <td class="visible-with-data" id="PRODUK">' + (feature.properties['PRODUK'] !== null ? autolinker.link(String(feature.properties['PRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TAHUNTERBI</th>\
+                        <td class="visible-with-data" id="TAHUNTERBI">' + (feature.properties['TAHUNTERBI'] !== null ? autolinker.link(String(feature.properties['TAHUNTERBI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PEMILIK</th>\
+                        <td class="visible-with-data" id="PEMILIK">' + (feature.properties['PEMILIK'] !== null ? autolinker.link(String(feature.properties['PEMILIK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPEMILI</th>\
+                        <td class="visible-with-data" id="TIPEPEMILI">' + (feature.properties['TIPEPEMILI'] !== null ? autolinker.link(String(feature.properties['TIPEPEMILI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NOHAK_FULL</th>\
+                        <td class="visible-with-data" id="NOHAK_FULL">' + (feature.properties['NOHAK_FULL'] !== null ? autolinker.link(String(feature.properties['NOHAK_FULL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KETERANGAN</th>\
+                        <td class="visible-with-data" id="KETERANGAN">' + (feature.properties['KETERANGAN'] !== null ? autolinker.link(String(feature.properties['KETERANGAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['search'] !== null ? autolinker.link(String(feature.properties['search']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_DESAPANGKUNGTIBAH_2_0(feature) {
+            switch(String(feature.properties['KETERANGAN'])) {
+                case 'TANAH TERINDIKASI TERLANTAR':
+                    return {
+                pane: 'pane_DESAPANGKUNGTIBAH_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(55,221,44,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_DESAPANGKUNGTIBAH_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,112,166,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DESAPANGKUNGTIBAH_2');
+        map.getPane('pane_DESAPANGKUNGTIBAH_2').style.zIndex = 402;
+        map.getPane('pane_DESAPANGKUNGTIBAH_2').style['mix-blend-mode'] = 'normal';
+        var layer_DESAPANGKUNGTIBAH_2 = new L.geoJson(json_DESAPANGKUNGTIBAH_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DESAPANGKUNGTIBAH_2',
+            layerName: 'layer_DESAPANGKUNGTIBAH_2',
+            pane: 'pane_DESAPANGKUNGTIBAH_2',
+            onEachFeature: pop_DESAPANGKUNGTIBAH_2,
+            style: style_DESAPANGKUNGTIBAH_2_0,
+        });
+        bounds_group.addLayer(layer_DESAPANGKUNGTIBAH_2);
+        map.addLayer(layer_DESAPANGKUNGTIBAH_2);
+        function pop_Merged_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KECAMATAN'] !== null ? autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KELURAHAN'] !== null ? autolinker.link(String(feature.properties['KELURAHAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TIPEHAK'] !== null ? autolinker.link(String(feature.properties['TIPEHAK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TIPEPRODUK'] !== null ? autolinker.link(String(feature.properties['TIPEPRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NIB'] !== null ? autolinker.link(String(feature.properties['NIB']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LUASPETA'] !== null ? autolinker.link(String(feature.properties['LUASPETA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NIBEL'] !== null ? autolinker.link(String(feature.properties['NIBEL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SU'] !== null ? autolinker.link(String(feature.properties['SU']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PBT'] !== null ? autolinker.link(String(feature.properties['PBT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PRODUK'] !== null ? autolinker.link(String(feature.properties['PRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAHUNTERBI'] !== null ? autolinker.link(String(feature.properties['TAHUNTERBI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['PEMILIK'] !== null ? autolinker.link(String(feature.properties['PEMILIK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TIPEPEMILI'] !== null ? autolinker.link(String(feature.properties['TIPEPEMILI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NOHAK_FULL'] !== null ? autolinker.link(String(feature.properties['NOHAK_FULL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['KETERANGAN'] !== null ? autolinker.link(String(feature.properties['KETERANGAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['search'] !== null ? autolinker.link(String(feature.properties['search']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(String(feature.properties['OBJECTID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(String(feature.properties['Shape_Leng']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(String(feature.properties['Shape_Area']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(String(feature.properties['layer']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['path'] !== null ? autolinker.link(String(feature.properties['path']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Merged_3_0() {
+            return {
+                pane: 'pane_Merged_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Merged_3');
+        map.getPane('pane_Merged_3').style.zIndex = 403;
+        map.getPane('pane_Merged_3').style['mix-blend-mode'] = 'normal';
+        var layer_Merged_3 = new L.geoJson(json_Merged_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Merged_3',
+            layerName: 'layer_Merged_3',
+            pane: 'pane_Merged_3',
+            onEachFeature: pop_Merged_3,
+            style: style_Merged_3_0,
+        });
+        bounds_group.addLayer(layer_Merged_3);
+        map.addLayer(layer_Merged_3);
+        function pop_DESABERABAN_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">KECAMATAN</th>\
+                        <td class="visible-with-data" id="KECAMATAN">' + (feature.properties['KECAMATAN'] !== null ? autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KELURAHAN</th>\
+                        <td class="visible-with-data" id="KELURAHAN">' + (feature.properties['KELURAHAN'] !== null ? autolinker.link(String(feature.properties['KELURAHAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEHAK</th>\
+                        <td class="visible-with-data" id="TIPEHAK">' + (feature.properties['TIPEHAK'] !== null ? autolinker.link(String(feature.properties['TIPEHAK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPRODUK</th>\
+                        <td class="visible-with-data" id="TIPEPRODUK">' + (feature.properties['TIPEPRODUK'] !== null ? autolinker.link(String(feature.properties['TIPEPRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIB</th>\
+                        <td class="visible-with-data" id="NIB">' + (feature.properties['NIB'] !== null ? autolinker.link(String(feature.properties['NIB']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LUASPETA</th>\
+                        <td class="visible-with-data" id="LUASPETA">' + (feature.properties['LUASPETA'] !== null ? autolinker.link(String(feature.properties['LUASPETA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NIBEL</th>\
+                        <td class="visible-with-data" id="NIBEL">' + (feature.properties['NIBEL'] !== null ? autolinker.link(String(feature.properties['NIBEL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SU</th>\
+                        <td class="visible-with-data" id="SU">' + (feature.properties['SU'] !== null ? autolinker.link(String(feature.properties['SU']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PBT</th>\
+                        <td class="visible-with-data" id="PBT">' + (feature.properties['PBT'] !== null ? autolinker.link(String(feature.properties['PBT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PRODUK</th>\
+                        <td class="visible-with-data" id="PRODUK">' + (feature.properties['PRODUK'] !== null ? autolinker.link(String(feature.properties['PRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TAHUNTERBI</th>\
+                        <td class="visible-with-data" id="TAHUNTERBI">' + (feature.properties['TAHUNTERBI'] !== null ? autolinker.link(String(feature.properties['TAHUNTERBI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">PEMILIK</th>\
+                        <td class="visible-with-data" id="PEMILIK">' + (feature.properties['PEMILIK'] !== null ? autolinker.link(String(feature.properties['PEMILIK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPEPEMILI</th>\
+                        <td class="visible-with-data" id="TIPEPEMILI">' + (feature.properties['TIPEPEMILI'] !== null ? autolinker.link(String(feature.properties['TIPEPEMILI']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NOHAK_FULL</th>\
+                        <td class="visible-with-data" id="NOHAK_FULL">' + (feature.properties['NOHAK_FULL'] !== null ? autolinker.link(String(feature.properties['NOHAK_FULL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KETERANGAN</th>\
+                        <td class="visible-with-data" id="KETERANGAN">' + (feature.properties['KETERANGAN'] !== null ? autolinker.link(String(feature.properties['KETERANGAN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['search'] !== null ? autolinker.link(String(feature.properties['search']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_DESABERABAN_4_0(feature) {
+            switch(String(feature.properties['KETERANGAN'])) {
+                case 'TANAH TERINDIKASI TERLANTAR':
+                    return {
+                pane: 'pane_DESABERABAN_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(55,221,44,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_DESABERABAN_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,112,166,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_DESABERABAN_4');
+        map.getPane('pane_DESABERABAN_4').style.zIndex = 404;
+        map.getPane('pane_DESABERABAN_4').style['mix-blend-mode'] = 'normal';
+        var layer_DESABERABAN_4 = new L.geoJson(json_DESABERABAN_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DESABERABAN_4',
+            layerName: 'layer_DESABERABAN_4',
+            pane: 'pane_DESABERABAN_4',
+            onEachFeature: pop_DESABERABAN_4,
+            style: style_DESABERABAN_4_0,
+        });
+        bounds_group.addLayer(layer_DESABERABAN_4);
+        map.addLayer(layer_DESABERABAN_4);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var overlaysTree = [
+            {label: 'DESA BERABAN<br /><table><tr><td style="text-align: center;"><img src="legend/DESABERABAN_4_TANAHTERINDIKASITERLANTAR0.png" /></td><td>TANAH TERINDIKASI TERLANTAR</td></tr><tr><td style="text-align: center;"><img src="legend/DESABERABAN_4_1.png" /></td><td></td></tr></table>', layer: layer_DESABERABAN_4},
+            {label: '<img src="legend/Merged_3.png" /> Merged', layer: layer_Merged_3},
+            {label: 'DESA PANGKUNG TIBAH<br /><table><tr><td style="text-align: center;"><img src="legend/DESAPANGKUNGTIBAH_2_TANAHTERINDIKASITERLANTAR0.png" /></td><td>TANAH TERINDIKASI TERLANTAR</td></tr><tr><td style="text-align: center;"><img src="legend/DESAPANGKUNGTIBAH_2_1.png" /></td><td></td></tr></table>', layer: layer_DESAPANGKUNGTIBAH_2},
+            {label: 'DESA ANTAP<br /><table><tr><td style="text-align: center;"><img src="legend/DESAANTAP_1_TANAHTERINDIKASITERLANTAR0.png" /></td><td>TANAH TERINDIKASI TERLANTAR</td></tr><tr><td style="text-align: center;"><img src="legend/DESAANTAP_1_1.png" /></td><td></td></tr></table>', layer: layer_DESAANTAP_1},
+            {label: "Google Satellite", layer: layer_GoogleSatellite_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: false, 
+        });
+        lay.addTo(map);
+		document.addEventListener("DOMContentLoaded", function() {
+            // set new Layers List height which considers toggle icon
+            function newLayersListHeight() {
+                var layerScrollbarElement = document.querySelector('.leaflet-control-layers-scrollbar');
+                if (layerScrollbarElement) {
+                    var layersListElement = document.querySelector('.leaflet-control-layers-list');
+                    var originalHeight = layersListElement.style.height 
+                        || window.getComputedStyle(layersListElement).height;
+                    var newHeight = parseFloat(originalHeight) - 50;
+                    layersListElement.style.height = newHeight + 'px';
+                }
+            }
+            var isLayersListExpanded = true;
+            var controlLayersElement = document.querySelector('.leaflet-control-layers');
+            var toggleLayerControl = document.querySelector('.leaflet-control-layers-toggle');
+            // toggle Collapsed/Expanded and apply new Layers List height
+            toggleLayerControl.addEventListener('click', function() {
+                if (isLayersListExpanded) {
+                    controlLayersElement.classList.remove('leaflet-control-layers-expanded');
+                } else {
+                    controlLayersElement.classList.add('leaflet-control-layers-expanded');
+                }
+                isLayersListExpanded = !isLayersListExpanded;
+                newLayersListHeight()
+            });	
+			// apply new Layers List height if toggle layerstree
+			if (controlLayersElement) {
+				controlLayersElement.addEventListener('click', function(event) {
+					var toggleLayerHeaderPointer = event.target.closest('.leaflet-layerstree-header-pointer span');
+					if (toggleLayerHeaderPointer) {
+						newLayersListHeight();
+					}
+				});
+			}
+            // Collapsed/Expanded at Start to apply new height
+            setTimeout(function() {
+                toggleLayerControl.click();
+            }, 10);
+            setTimeout(function() {
+                toggleLayerControl.click();
+            }, 10);
+            // Collapsed touch/small screen
+            var isSmallScreen = window.innerWidth < 650;
+            if (isSmallScreen) {
+                setTimeout(function() {
+                    controlLayersElement.classList.remove('leaflet-control-layers-expanded');
+                    isLayersListExpanded = !isLayersListExpanded;
+                }, 500);
+            }  
+        });       
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_Merged_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'search'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        </script>
+    </body>
+</html>
