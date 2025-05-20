@@ -7,6 +7,9 @@ use App\Http\Controllers\PetaController;
 Route::get('/', function () {
     return view('home', ['title' => "Home Page"]);
 });
+Route::get('/tentang', function () {
+    return view('tentang', ['title' => "Tentang"]);
+});
 
 // Halaman login & signup dalam satu halaman
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

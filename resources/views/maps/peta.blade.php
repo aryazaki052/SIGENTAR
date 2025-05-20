@@ -7,6 +7,7 @@
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
 
   <!-- Leaflet and plugins CSS -->
   <link rel="stylesheet" href="{{ asset('/css/leaflet.css') }}">
@@ -29,47 +30,56 @@
     } */
   </style>
 </head>
-<body class="h-screen w-screen overflow-hidden">
-    <div class="flex flex-col h-screen">
-      
-      <!-- Navbar -->
-      <x-layout></x-layout>
-      
-      <!-- Main Layout (Sidebar & Map) -->
-      <div class="flex flex-1 overflow-hidden mt-25">
-        
-        <!-- Sidebar -->
-        <div class="w-full md:w-1/3 lg:w-1/4 p-4 bg-white z-[1000] shadow-md overflow-y-auto">
-          <div class="space-y-4">
-            <div>
-              <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
-              <select id="kecamatan" class="w-full border rounded px-2 py-1">
-                <option value="">Pilih Kecamatan</option>
-              </select>
-            </div>
-            <div>
-              <label for="nib" class="block font-semibold mb-1">NIB</label>
-              <select id="nib" class="w-full border rounded px-2 py-1">
-                <option value="">Pilih NIB</option>
-              </select>
-            </div>
-            <button id="cari" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Cari</button>
-            <div>
-              <p class="font-semibold mb-2">Navigasi</p>
-              <div id="zoom-controls" class="flex space-x-2">
-                <button onclick="map.zoomIn()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">+</button>
-                <button onclick="map.zoomOut()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">−</button>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Map Section -->
-        <div class="flex-1 relative">
-          <div id="map" class="absolute inset-0 z-0"></div>
-        </div>
-  
+<body class="h-screen w-screen">
+  <!-- Navbar -->
+  <x-layout></x-layout>
+
+  <!-- Container utama: Sidebar & Map -->
+<div class="flex flex-col md:flex-row h-[calc(100vh-64px)] mt-14 md:mt-18 lg:mt-22 xl:mt-26">
+
+    
+    <!-- Sidebar: form & navigasi -->
+    <div class="w-full md:w-1/3 bg-amber-100 p-4 space-y-4 overflow-y-auto md:h-full mt-4 md:mt-8 lg:mt-12 xl:mt-16">
+      <!-- Dropdown Kecamatan -->
+      <div>
+        <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
+        <select id="kecamatan" class="w-full border rounded px-2 py-1">
+          <option value="" class="w-full max-w-xs border rounded px-2 py-1">Pilih Kecamatan</option>
+        </select>
       </div>
+
+      <!-- Dropdown NIB -->
+      <div>
+        <label for="nib" class="block font-semibold mb-1">NIB</label>
+        <select id="nib" class="w-full border rounded px-2 py-1">
+          <option value="">Pilih NIB</option>
+        </select>
+      </div>
+
+      <!-- Tombol Cari -->
+      <button id="cari" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
+        Cari
+      </button>
+
+      <!-- Info -->
+      <div id="info-kecamatan" class="p-3 bg-white border rounded shadow text-sm"></div>
+
+      <!-- Navigasi Zoom -->
+      <div>
+        <p class="font-semibold mb-2">Navigasi</p>
+        <div class="flex space-x-2">
+          <button onclick="map.zoomIn()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">+</button>
+          <button onclick="map.zoomOut()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">−</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Peta -->
+    <div class="flex-1 relative h-[50vh] md:h-full">
+      <div id="map" class="absolute inset-0 z-0"></div>
+    </div>
+
+  </div>
     </div>
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
