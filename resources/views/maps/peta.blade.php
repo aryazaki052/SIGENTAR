@@ -27,74 +27,85 @@
 </head>
 
 <body class="h-screen w-screen">
+
+    
     <!-- Navbar -->
     <x-layout></x-layout>
 
     <!-- Container utama: Sidebar & Map -->
-<div class="flex flex-col md:flex-row  " style="height: 100%">
+    <div class="flex flex-col md:flex-row  " style="height: 100%">
 
 
-    <!-- Sidebar -->
-    <div class="w-full md:w-1/3 bg-amber-100 p-4 space-y-4 overflow-y-auto mt-26">
+        <!-- Sidebar -->
+        <div class="w-full md:w-1/3 bg-amber-100 p-4 space-y-4 overflow-y-auto mt-26">
 
-        <!-- Dropdown Kecamatan -->
-        <div>
-            <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
-            <select id="kecamatan" class="w-full border rounded px-2 py-1">
-                <option value="">Pilih Kecamatan</option>
-            </select>
-        </div>
-
-        <!-- Dropdown NIB -->
-        <div>
-            <label for="nib" class="block font-semibold mb-1">NIB</label>
-            <select id="nib" class="w-full border rounded px-2 py-1">
-                <option value="">Pilih NIB</option>
-            </select>
-        </div>
-
-        <!-- Tombol Cari -->
-        <button id="cari" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-            Cari
-        </button>
-
-        <!-- Info -->
-        <div id="info-kecamatan" class="p-3 bg-white border rounded shadow text-sm"></div>
-
-        <!-- Navigasi + Legenda -->
-        <div class="flex md:flex-col flex-row items-start space-x-4">
-            <!-- Navigasi Zoom -->
+            <!-- Dropdown Kecamatan -->
             <div>
-                <p class="font-semibold mb-2">Navigasi</p>
-                <div class="flex space-x-2">
-                    <button onclick="map.zoomIn()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">+</button>
-                    <button onclick="map.zoomOut()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">−</button>
-                </div>
+                <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
+                <select id="kecamatan" class="w-full border rounded px-2 py-1">
+                    <option value="">Pilih Kecamatan</option>
+                </select>
             </div>
 
-            <!-- Legenda -->
-            <div class="flex flex-col space-y-2 md:mt-8">
-                <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-red-600 border border-black"></div>
-                    <span class="text-sm">Tanah Terindikasi Terlantar</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-green-600 border border-black"></div>
-                    <span class="text-sm">Tanah Tidak Terindikasi Terlantar</span>
-                </div>
+            <!-- Dropdown NIB -->
+            <div>
+                <label for="nib" class="block font-semibold mb-1">NIB</label>
+                <select id="nib" class="w-full border rounded px-2 py-1">
+                    <option value="">Pilih NIB</option>
+                </select>
             </div>
+
+            <!-- Tombol Cari -->
+            <button id="cari" class="bg-orange-300 text-black px-4 py-2 rounded hover:bg-orange-400 w-full">
+                Cari
+            </button>
+
+            <!-- Info -->
+            <div id="info-kecamatan" class="p-3 400 border rounded shadow text-sm"></div>
+
+            <!-- Navigasi + Legenda -->
+            <div class="flex md:flex-col flex-row items-start space-x-4">
+                <!-- Navigasi Zoom -->
+                <div>
+                    <p class="font-semibold mb-2">Navigasi</p>
+                    <div class="flex space-x-2">
+                        <button onclick="map.zoomIn()"
+                            class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">+</button>
+                        <button onclick="map.zoomOut()"
+                            class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">−</button>
+                    </div>
+                </div>
+
+                <!-- Legenda -->
+                <div>
+                    <div class="flex flex-col space-y-2 md:mt-8">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-red-600 border border-black"></div>
+                            <span class="text-sm">Tanah Terindikasi Terlantar</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-green-600 border border-black"></div>
+                            <span class="text-sm">Tanah Tidak Terindikasi Terlantar</span>
+                        </div>
+                    </div>
+                    {{-- <div id="fixed-scale" class="absolute bottom-2 left-2 bg-white px-3 py-1 text-sm shadow rounded">
+                        Skala 1:20.000
+                    </div> --}}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Peta -->
+        <div class="flex-1 relative md:mt-26">
+            <div id="map" class="absolute inset-0 z-0"></div>
         </div>
 
     </div>
 
-    <!-- Peta -->
-        <div class="flex-1 relative ">
-            <div id="map" class="absolute inset-0 z-0"></div>
-        </div>
 
-</div>
-
-    
     <script src="js/qgis2web_expressions.js"></script>
     <script src="js/leaflet.js"></script>
     <script src="js/L.Control.Layers.Tree.min.js"></script>
@@ -206,6 +217,48 @@
             position: 'topright'
         });
         map.addControl(compass);
+
+     // Fungsi untuk menghitung skala saat ini
+function calculateScale(map) {
+    const centerLat = map.getCenter().lat;
+    const zoom = map.getZoom();
+    const dpi = 96; // default DPI screen
+
+    // Rumus berdasarkan skala Leaflet (Earth circumference at equator / (tile size * 2^zoom))
+    const inchesPerMeter = 39.37;
+    const metersPerPixel = 40075016.686 * Math.cos(centerLat * Math.PI / 180) / (256 * Math.pow(2, zoom));
+    const scale = Math.round(metersPerPixel * dpi * inchesPerMeter);
+
+    return `1:${scale.toLocaleString()}`;
+}
+
+// Kontrol skala 1:xxx
+L.Control.MapScale = L.Control.extend({
+    onAdd: function (map) {
+        this._div = L.DomUtil.create('div', 'leaflet-control-scale-ratio');
+        this._div.style.padding = '5px';
+        this._div.style.background = 'rgba(255,255,255,0.8)';
+        this._div.style.fontSize = '12px';
+        this._div.style.borderRadius = '4px';
+
+        this.update(map);
+        map.on('zoomend moveend', () => this.update(map));
+
+        return this._div;
+    },
+
+    update: function (map) {
+        this._div.innerHTML = calculateScale(map);
+    }
+});
+
+L.control.mapScale = function (opts) {
+    return new L.Control.MapScale(opts);
+};
+
+// Tambahkan ke peta di pojok kiri bawah
+L.control.mapScale({ position: 'topleft' }).addTo(map);
+
 
         map.createPane('pane_GoogleSatellite_0');
         map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
