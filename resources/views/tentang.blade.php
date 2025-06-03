@@ -7,13 +7,13 @@
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
         <div class="text-center mb-12 mt-14 md:mt-18 lg:mt-22 xl:mt-26" >
-            <h1 class="text-4xl font-bold text-yellow-800 mb-2" data-aos="fade-up" data-aos-duration="3000">Tentang <span class="text-yellow-600">SI GENTAR</span></h1>
+            <h1 class="text-4xl font-bold text-yellow-800 mb-2" data-aos="fade-up" data-aos-duration="3000">Tentang <span class="text-yellow-600">SIGENTAR</span></h1>
             <p id="typed-text" class="text-xl text-gray-600 font-medium h-6"></p>
         </div>
 
         <!-- Deskripsi -->
         <p class="text-lg text-gray-700 leading-relaxed mb-12 text-center" data-aos="fade-in" data-aos-duration="3000">
-            SI GENTAR adalah platform berbasis GIS untuk mendukung proses identifikasi dan klasifikasi tanah terlantar. Dikembangkan oleh Tim KKNP-PTLP STPN 2024/2025, sistem ini menjawab kebutuhan digitalisasi layanan pertanahan sesuai PP Nomor 21 Tahun 2020.
+            SIGENTAR adalah platform berbasis GIS untuk mendukung proses identifikasi dan klasifikasi tanah terlantar. Dikembangkan oleh Tim KKNP-PTLP STPN 2024/2025, sistem ini menjawab kebutuhan digitalisasi layanan pertanahan sesuai PP Nomor 21 Tahun 2020.
         </p>
 
         <!-- Fitur -->

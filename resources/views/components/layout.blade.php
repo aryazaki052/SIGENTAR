@@ -24,7 +24,7 @@
   AOS.init();
   document.addEventListener('DOMContentLoaded', () => {
     new Typed('#typed-text', {
-      strings: ["Sistem Informasi Geospasial Tanah Terlantar", "Digitalisasi Pengelolaan Pertanahan", "Inovasi dari KKNP-PTLP Tabanan"],
+      strings: ["Sistem Informasi Geospasial Tanah Terlantar", "Digitalisasi Pengelolaan Pertanahan", "Inovasi dari KKNP-PTLP Kantah Tabanan 2025"],
       typeSpeed: 30,
       backSpeed: 25,
       loop: true,

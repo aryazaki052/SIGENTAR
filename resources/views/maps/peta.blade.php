@@ -21,14 +21,12 @@
     <link rel="stylesheet" href="{{ asset('/css/leaflet-control-geocoder.Geocoder.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/leaflet-measure.css') }}">
 
-    <style>
 
-    </style>
 </head>
 
 <body class="h-screen w-screen">
 
-    
+
     <!-- Navbar -->
     <x-layout></x-layout>
 
@@ -38,22 +36,43 @@
 
         <!-- Sidebar -->
         <div class="w-full md:w-1/3 bg-amber-100 p-4 space-y-4 overflow-y-auto mt-26">
+<!-- Grid baris pertama: Kecamatan & Kelurahan -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Dropdown Kecamatan -->
+    <div>
+      <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
+      <select id="kecamatan" class="w-full border rounded px-2 py-1">
+        <option value="">Pilih Kecamatan</option>
+      </select>
+    </div>
 
-            <!-- Dropdown Kecamatan -->
-            <div>
-                <label for="kecamatan" class="block font-semibold mb-1">Kecamatan</label>
-                <select id="kecamatan" class="w-full border rounded px-2 py-1">
-                    <option value="">Pilih Kecamatan</option>
-                </select>
-            </div>
+    <!-- Dropdown Kelurahan -->
+    <div>
+      <label for="kelurahan" class="block font-semibold mb-1">Kelurahan</label>
+      <select id="kelurahan" class="w-full border rounded px-2 py-1">
+        <option value="">Pilih Kelurahan</option>
+      </select>
+    </div>
+  </div>
 
-            <!-- Dropdown NIB -->
-            <div>
-                <label for="nib" class="block font-semibold mb-1">NIB</label>
-                <select id="nib" class="w-full border rounded px-2 py-1">
-                    <option value="">Pilih NIB</option>
-                </select>
-            </div>
+  <!-- Grid baris kedua: NIB & NO HAK -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Dropdown NIB -->
+    <div>
+      <label for="nib" class="block font-semibold mb-1">NIB</label>
+      <select id="nib" class="w-full border rounded px-2 py-1">
+        <option value="">Pilih NIB</option>
+      </select>
+    </div>
+
+    <!-- Dropdown NOHAK -->
+    <div>
+      <label for="nohak" class="block font-semibold mb-1">NO HAK</label>
+      <select id="nohak" class="w-full border rounded px-2 py-1">
+        <option value="">Pilih NO HAK</option>
+      </select>
+    </div>
+  </div>
 
             <!-- Tombol Cari -->
             <button id="cari" class="bg-orange-300 text-black px-4 py-2 rounded hover:bg-orange-400 w-full">
@@ -65,20 +84,9 @@
 
             <!-- Navigasi + Legenda -->
             <div class="flex md:flex-col flex-row items-start space-x-4">
-                <!-- Navigasi Zoom -->
-                <div>
-                    <p class="font-semibold mb-2">Navigasi</p>
-                    <div class="flex space-x-2">
-                        <button onclick="map.zoomIn()"
-                            class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">+</button>
-                        <button onclick="map.zoomOut()"
-                            class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">−</button>
-                    </div>
-                </div>
-
                 <!-- Legenda -->
                 <div>
-                    <div class="flex flex-col space-y-2 md:mt-8">
+                    <div class="flex flex-col space-y-0.5 md:mt-3">
                         <div class="flex items-center space-x-2">
                             <div class="w-4 h-4 bg-red-600 border border-black"></div>
                             <span class="text-sm">Tanah Terindikasi Terlantar</span>
@@ -88,12 +96,40 @@
                             <span class="text-sm">Tanah Tidak Terindikasi Terlantar</span>
                         </div>
                     </div>
-                    {{-- <div id="fixed-scale" class="absolute bottom-2 left-2 bg-white px-3 py-1 text-sm shadow rounded">
-                        Skala 1:20.000
-                    </div> --}}
-
                 </div>
-
+            </div>
+            <!-- Navigasi + Legenda -->
+            <div class="flex md:flex-col flex-row items-start space-x-4">
+                <!-- Legenda -->
+                <div>
+                    <div class="flex flex-col space-y-0.5 md:mt-3">
+                        <div class="flex items-center space-x-2">
+                            
+                            <h4 class="text-sm font-bold">Keterangan</h4>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T0. Sudah Pendayagunaan TCUN</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T1. Sudah Penetapan Tanah Terlantar</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T2. Dihapus/Optimalisasi Penggunaan</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T3. Sudah Usulan Penetapan Tante (Status Quo)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T4. Sudah Penertiban (Belum Dilanjutkan)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T5. Belum Penertiban (Belum Berakhir Hak)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm">T6. Belum Penertiban (Sudah Berakhir Hak)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -192,9 +228,9 @@
 
 
 
-        // var zoomControl = L.control.zoom({
-        //     position: 'topleft'
-        // }).addTo(map);
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
         // L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
         // // var measureControl = new L.Control.Measure({
         // //     position: 'topleft',
@@ -218,46 +254,50 @@
         });
         map.addControl(compass);
 
-     // Fungsi untuk menghitung skala saat ini
-function calculateScale(map) {
-    const centerLat = map.getCenter().lat;
-    const zoom = map.getZoom();
-    const dpi = 96; // default DPI screen
+       
 
-    // Rumus berdasarkan skala Leaflet (Earth circumference at equator / (tile size * 2^zoom))
-    const inchesPerMeter = 39.37;
-    const metersPerPixel = 40075016.686 * Math.cos(centerLat * Math.PI / 180) / (256 * Math.pow(2, zoom));
-    const scale = Math.round(metersPerPixel * dpi * inchesPerMeter);
+        // Fungsi untuk menghitung skala saat ini
+        function calculateScale(map) {
+            const centerLat = map.getCenter().lat;
+            const zoom = map.getZoom();
+            const dpi = 96; // default DPI screen
 
-    return `1:${scale.toLocaleString()}`;
-}
+            // Rumus berdasarkan skala Leaflet (Earth circumference at equator / (tile size * 2^zoom))
+            const inchesPerMeter = 39.37;
+            const metersPerPixel = 40075016.686 * Math.cos(centerLat * Math.PI / 180) / (256 * Math.pow(2, zoom));
+            const scale = Math.round(metersPerPixel * dpi * inchesPerMeter);
 
-// Kontrol skala 1:xxx
-L.Control.MapScale = L.Control.extend({
-    onAdd: function (map) {
-        this._div = L.DomUtil.create('div', 'leaflet-control-scale-ratio');
-        this._div.style.padding = '5px';
-        this._div.style.background = 'rgba(255,255,255,0.8)';
-        this._div.style.fontSize = '12px';
-        this._div.style.borderRadius = '4px';
+            return `1:${scale.toLocaleString()}`;
+        }
 
-        this.update(map);
-        map.on('zoomend moveend', () => this.update(map));
+        // Kontrol skala 1:xxx
+        L.Control.MapScale = L.Control.extend({
+            onAdd: function (map) {
+                this._div = L.DomUtil.create('div', 'leaflet-control-scale-ratio');
+                this._div.style.padding = '5px';
+                this._div.style.background = 'rgba(255,255,255,0.8)';
+                this._div.style.fontSize = '12px';
+                this._div.style.borderRadius = '4px';
 
-        return this._div;
-    },
+                this.update(map);
+                map.on('zoomend moveend', () => this.update(map));
 
-    update: function (map) {
-        this._div.innerHTML = calculateScale(map);
-    }
-});
+                return this._div;
+            },
 
-L.control.mapScale = function (opts) {
-    return new L.Control.MapScale(opts);
-};
+            update: function (map) {
+                this._div.innerHTML = calculateScale(map);
+            }
+        });
 
-// Tambahkan ke peta di pojok kiri bawah
-L.control.mapScale({ position: 'topleft' }).addTo(map);
+        L.control.mapScale = function (opts) {
+            return new L.Control.MapScale(opts);
+        };
+
+        // Tambahkan ke peta di pojok kiri bawah
+        L.control.mapScale({
+            position: 'topleft'
+        }).addTo(map);
 
 
         map.createPane('pane_GoogleSatellite_0');
@@ -292,106 +332,79 @@ L.control.mapScale({ position: 'topleft' }).addTo(map);
                 },
                 mouseover: highlightFeature,
             });
+
+            function safeField(value) {
+                if (value === null || value === undefined || value === '') {
+                    return "DATA TIDAK ADA";
+                }
+                // kalau bukan string, konversi ke string dulu supaya bisa replace dan link
+                let strValue = String(value).replace(/'/g, '\'').toLocaleString();
+                return autolinker.link(strValue);
+            }
+
             var popupContent = '<table>\
-                    <tr>\
-                        <th scope="row">KECAMATAN</th>\
-                        <td class="visible-with-data" id="KECAMATAN">' + (feature.properties['KECAMATAN'] !== null ?
-                autolinker.link(String(feature.properties['KECAMATAN']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">KELURAHAN</th>\
-                        <td class="visible-with-data" id="KELURAHAN">' + (feature.properties['KELURAHAN'] !== null ?
-                autolinker.link(String(feature.properties['KELURAHAN']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">TIPEHAK</th>\
-                        <td class="visible-with-data" id="TIPEHAK">' + (feature.properties['TIPEHAK'] !== null ?
-                autolinker.link(String(feature.properties['TIPEHAK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">TIPEPRODUK</th>\
-                        <td class="visible-with-data" id="TIPEPRODUK">' + (feature.properties['TIPEPRODUK'] !== null ?
-                autolinker.link(String(feature.properties['TIPEPRODUK']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">NIB</th>\
-                        <td class="visible-with-data" id="NIB">' + (feature.properties['NIB'] !== null ? autolinker
-                .link(String(feature.properties['NIB']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">LUASPETA</th>\
-                        <td class="visible-with-data" id="LUASPETA">' + (feature.properties['LUASPETA'] !== null ?
-                autolinker.link(String(feature.properties['LUASPETA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">NIBEL</th>\
-                        <td class="visible-with-data" id="NIBEL">' + (feature.properties['NIBEL'] !== null ? autolinker
-                .link(String(feature.properties['NIBEL']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">SU</th>\
-                        <td class="visible-with-data" id="SU">' + (feature.properties['SU'] !== null ? autolinker.link(
-                String(feature.properties['SU']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">PBT</th>\
-                        <td class="visible-with-data" id="PBT">' + (feature.properties['PBT'] !== null ? autolinker
-                .link(String(feature.properties['PBT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">PRODUK</th>\
-                        <td class="visible-with-data" id="PRODUK">' + (feature.properties['PRODUK'] !== null ?
-                autolinker.link(String(feature.properties['PRODUK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">TAHUNTERBI</th>\
-                        <td class="visible-with-data" id="TAHUNTERBI">' + (feature.properties['TAHUNTERBI'] !== null ?
-                autolinker.link(String(feature.properties['TAHUNTERBI']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">PEMILIK</th>\
-                        <td class="visible-with-data" id="PEMILIK">' + (feature.properties['PEMILIK'] !== null ?
-                autolinker.link(String(feature.properties['PEMILIK']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">TIPEPEMILI</th>\
-                        <td class="visible-with-data" id="TIPEPEMILI">' + (feature.properties['TIPEPEMILI'] !== null ?
-                autolinker.link(String(feature.properties['TIPEPEMILI']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">NOHAK_FULL</th>\
-                        <td class="visible-with-data" id="NOHAK_FULL">' + (feature.properties['NOHAK_FULL'] !== null ?
-                autolinker.link(String(feature.properties['NOHAK_FULL']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(String(feature
-                .properties['Shape_Leng']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Shape_Area'] !== null ? autolinker.link(String(feature
-                .properties['Shape_Area']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <th scope="row">KETERANGAN</th>\
-                        <td class="visible-with-data" id="KETERANGAN">' + (feature.properties['KETERANGAN'] !== null ?
-                autolinker.link(String(feature.properties['KETERANGAN']).replace(/'/g, '\'').toLocaleString()) : ''
-            ) + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(String(feature
-                .properties['OBJECTID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Shape_Le_1'] !== null ? autolinker.link(String(feature
-                .properties['Shape_Le_1']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                </table>';
+    <tr>\
+        <th scope="row">KECAMATAN :</th>\
+        <td class="visible-with-data" id="KECAMATAN">' + safeField(feature.properties['KECAMATAN']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">KELURAHAN :</th>\
+        <td class="visible-with-data" id="KELURAHAN">' + safeField(feature.properties['KELURAHAN']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">NIB :</th>\
+        <td class="visible-with-data" id="NIB">' + safeField(feature.properties['NIB']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">NOMOR_SK :</th>\
+        <td>' + safeField(feature.properties['NOMOR_SK']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">KATEGORI :</th>\
+        <td>' + safeField(feature.properties['KATEGORI']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">LUASPETA :</th>\
+        <td class="visible-with-data" id="LUASPETA">' + safeField(feature.properties['LUASPETA']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">NIBEL :</th>\
+        <td class="visible-with-data" id="NIBEL">' + safeField(feature.properties['NIBEL']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">SU :</th>\
+        <td class="visible-with-data" id="SU">' + safeField(feature.properties['SU']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">PBT :</th>\
+        <td class="visible-with-data" id="PBT">' + safeField(feature.properties['PBT']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">PRODUK :</th>\
+        <td class="visible-with-data" id="PRODUK">' + safeField(feature.properties['PRODUK']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">TAHUNTERBIT :</th>\
+        <td class="visible-with-data" id="TAHUNTERBI">' + safeField(feature.properties['TAHUNTERBI']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">PEMILIK :</th>\
+        <td class="visible-with-data" id="PEMILIK">' + safeField(feature.properties['PEMILIK']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">TIPEPEMILIK :</th>\
+        <td class="visible-with-data" id="TIPEPEMILI">' + safeField(feature.properties['TIPEPEMILI']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">NOHAK_FULL :</th>\
+        <td class="visible-with-data" id="NOHAK_FULL">' + safeField(feature.properties['NOHAK_FULL']) + '</td>\
+    </tr>\
+    <tr>\
+        <th scope="row">KETERANGAN :</th>\
+        <td class="visible-with-data" id="KETERANGAN">' + safeField(feature.properties['KETERANGAN']) + '</td>\
+    </tr>\
+</table>';
+
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
             layer.on('popupopen', function (e) {
                 addClassToPopupIfMedia(content, e.popup);
